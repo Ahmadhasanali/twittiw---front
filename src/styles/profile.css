@@ -1,0 +1,31 @@
+.user-info{
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem;
+}
+
+.btn-tw.btn-edit-profile{
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0.1rem solid #5e5b5b;
+    padding: 0.5rem 1rem;
+}
+
+.user-menu { 
+    padding: 0 1rem;
+    border-bottom: 0.1rem solid #5e5b5b;
+}
+
+.user-menu p{ 
+    margin: 0;
+    border-bottom: 0.3rem solid #1D9BF0;
+    width: fit-content;
+    padding: 0 0.5rem 0.5rem 0.5rem;
+}
+
+.modal-content{
+    background-color: #121213 !important;
+    color: #fafafa !important;
+    border-radius: 1rem;
+    box-shadow: 0.4rem 0.5rem 1rem #1b1b1b;
+}

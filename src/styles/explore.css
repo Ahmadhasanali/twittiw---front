@@ -1,0 +1,35 @@
+.headline{
+    background-image: url('https://pbs.twimg.com/semantic_core_img/1480824818131877888/lsYalsm_?format=png&name=small');
+    min-height: 50vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+.category{
+    margin: 0;
+    color: #a8a8a8;
+}
+.headline-title{ font-size: 2rem;}
+
+.trends-for-you, .headline, .whats-happening {border-bottom: 0.1rem solid #5e5b5b;}
+
+.whats-happening-title{font-weight: 700;}
+
+.wh-image{
+    width: 5rem;
+    height: 5rem;
+}
+
+.wh-image img{ 
+    border-radius: 1rem;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.topic-title{
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.icon-comment{ color: #1D9BF0;}

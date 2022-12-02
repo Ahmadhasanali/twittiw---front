@@ -1,0 +1,14 @@
+.card-tweet{
+    padding: 0.5rem 1.5rem;
+    border-bottom: 0.1rem solid #5e5b5b;
+    padding-bottom: 1rem;
+}
+
+.username{ color: #7c7c7c;}
+
+.like-rt-reply{
+    display: flex;
+    justify-content: space-around;
+}
+
+.icon:hover{ cursor: pointer;}

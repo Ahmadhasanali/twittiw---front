@@ -1,0 +1,97 @@
+{
+  "posts": [
+    {
+      "post": "halo",
+      "userId": 3,
+      "name": "Khairunnisa",
+      "username": "khairunnisaas",
+      "id": 6
+    },
+    {
+      "post": "test create post",
+      "userId": 1,
+      "name": "Ilham Fathur Robbani",
+      "username": "ilhammm",
+      "id": 7
+    },
+    {
+      "post": "bisa tidak ya?",
+      "userId": 2,
+      "name": "Ahmad Hasan Ali",
+      "username": "aliiii",
+      "id": 8
+    },
+    {
+      "post": "asdw",
+      "userId": 2,
+      "name": "Ahmad Hasan Ali",
+      "username": "hasanSkuy",
+      "id": 9
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "name": "Ilham Fathur Robbani",
+      "email": "ilham@gmail.com",
+      "password": "$2a$12$HkYP4JYZM7nmJPMaSGTQ4.RI5LhbqqIMhUYtdlZH35s9/PRZtQtqS",
+      "username": "ilhammm"
+    },
+    {
+      "id": 2,
+      "name": "Ahmad Hasan Ali",
+      "email": "hasan@gmail.com",
+      "password": "$2a$12$HkYP4JYZM7nmJPMaSGTQ4.RI5LhbqqIMhUYtdlZH35s9/PRZtQtqS",
+      "username": "hasanSkuy"
+    },
+    {
+      "id": 3,
+      "name": "Khoirunnisa",
+      "email": "nisa@gmail.com",
+      "password": "$2a$12$HkYP4JYZM7nmJPMaSGTQ4.RI5LhbqqIMhUYtdlZH35s9/PRZtQtqS",
+      "username": "khairunnisaas"
+    }
+  ],
+  "comments": [
+    {
+      "body": "asdw",
+      "postId": 8,
+      "userId": 2,
+      "userName": "Ahmad Hasan Ali",
+      "username": "hasanSkuy",
+      "id": 1
+    }
+  ],
+  "likes": [
+    {
+      "postId": 6,
+      "userId": 2,
+      "id": 5
+    },
+    {
+      "postId": 8,
+      "userId": 2,
+      "id": 14
+    },
+    {
+      "postId": 7,
+      "userId": 2,
+      "id": 15
+    },
+    {
+      "postId": 6,
+      "userId": 2,
+      "id": 16
+    },
+    {
+      "postId": 8,
+      "userId": 2,
+      "id": 18
+    },
+    {
+      "postId": 8,
+      "userId": 2,
+      "id": 22
+    }
+  ]
+}
