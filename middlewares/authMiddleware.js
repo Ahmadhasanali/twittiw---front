@@ -25,7 +25,7 @@ module.exports = async (req, res, next) => {
         next();
     } catch (error) {
         return res.status(400).send({
-            errorMessage: "error.message"
+            errorMessage: error.message
         });
     }
 }

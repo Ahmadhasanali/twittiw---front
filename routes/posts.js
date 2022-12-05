@@ -1,5 +1,6 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
+const authMiddleware = require('../middlewares/authMiddleware')
 const { Posts } = require('../models')
 const joi = require('joi')
 
