@@ -10,15 +10,14 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       userId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false,
       },
       content: {
         type: Sequelize.STRING
       },
       likes: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-        defaultValue: 0
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
