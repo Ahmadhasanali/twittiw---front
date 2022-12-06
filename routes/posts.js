@@ -1,13 +1,13 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const authMiddleware = require('../middlewares/authMiddleware')
-const { Posts } = require('../models')
+const { Post } = require('../models')
 const joi = require('joi')
 
 const router = express.Router()
 
 router.get('/posts', async(req, res) => {
-    const posts = await Posts.findAll()
+    const posts = await Post.findAll({include: 'user'})
     const result = posts.map(post => {
         return post
     })
@@ -24,7 +24,7 @@ router.post('/post', authMiddleware, async(req, res) => {
         const {content} = await createPostSchema.validateAsync(req.body)
         const {user} = res.locals
         const userId = user.dataValues.userId
-        const createPost = await Posts.create({
+        const createPost = await Post.create({
             userId,
             content
         })
@@ -45,7 +45,7 @@ router.post('/post/:idPost', authMiddleware, async(req, res) => {
     const {user} = res.locals
     const userId = user.dataValues.userId
     const {idPost} = req.params
-    const post = await Posts.findOne({where:{postId: idPost}})
+    const post = await Post.findOne({where:{postId: idPost}})
 
     if (!post) {
         return res.status(404).send({

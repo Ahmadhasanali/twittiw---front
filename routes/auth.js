@@ -88,10 +88,4 @@ router.post('/login', async (req, res) => {
     return res.status(200).send({ token });
 })
 
-router.get('/check/middleware', authMiddleware, async (req, res) => {
-    return res.send({
-        status: "success"
-    })
-})
-
 module.exports = router;
