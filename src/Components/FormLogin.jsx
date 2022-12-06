@@ -14,6 +14,7 @@ process.env.NODE_ENV == 'development' ?
     url = process.env.REACT_APP_API_URL
 
 const rootUrl = `${url}users`
+const rootUrlTwittiw = "http://localhost:8080/api/";
 // PASSWORD = admin123
 
 const FormLogin = () => {
@@ -50,9 +51,24 @@ const FormLogin = () => {
             setForm({ email: '', password: '' });
         }
     }
+
+    const login = async () => {
+        try {
+            const res = await axios.post(`${rootUrlTwittiw}/login`, form)
+            // console.log(res.data.user)
+            // console.log(res.status)
+            if(res.status === 200){
+                sessionStorage.setItem('data_user', JSON.stringify(res.data.user));
+                navigate('/');
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
     const handleLogin = event => {
         event.preventDefault();
-        getUsers();
+        login()
+        // getUsers();
     }
 
     return (

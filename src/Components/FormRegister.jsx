@@ -101,10 +101,6 @@ const FormRegister = () => {
             nickName: username,
             password: password,
             confirmPassword: confirmPassword,
-          },
-          {
-            responseType: "text",
-            transformResponse: [(v) => v],
           }
         );
     } catch (error) {
