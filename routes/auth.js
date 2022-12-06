@@ -85,7 +85,7 @@ router.post('/login', async (req, res) => {
         expires: expires,
     });
 
-    return res.status(200).send({ token });
+    return res.status(200).send({ token, user });
 })
 
 router.get('/check/middleware', authMiddleware, async (req, res) => {
