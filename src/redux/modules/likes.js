@@ -14,18 +14,32 @@ process.env.NODE_ENV == 'development' ?
     :
     url = process.env.REACT_APP_API_URL
 
+// export const getLikes = createAsyncThunk(
+//     'getLikes',
+//     async (payload, thunkApi) => {
+//         try {
+//             const { data } = await axios.get(url + 'likes');
+//             const likes = data.filter(like => like.userId === payload);
+//             return thunkApi.fulfillWithValue(likes);
+//         } catch (error) {
+//             return thunkApi.rejectWithValue(error);
+//         }
+//     }
+// );
 export const getLikes = createAsyncThunk(
     'getLikes',
     async (payload, thunkApi) => {
         try {
-            const { data } = await axios.get(url + 'likes');
-            const likes = data.filter(like => like.userId === payload);
-            return thunkApi.fulfillWithValue(likes);
+            // console.log(payload, "tes")
+            const likes = await axios.get(url + `posts/${payload.postId}/like/${payload.userId}`);
+            // const likes = data.filter(like => like.userId === payload);
+            return thunkApi.fulfillWithValue(likes.data);
         } catch (error) {
             return thunkApi.rejectWithValue(error);
         }
     }
 );
+
 
 export const getCountLikes = createAsyncThunk(
     'getCountLikes',
@@ -60,15 +74,26 @@ export const createLikes = createAsyncThunk(
     'createLikes',
     async (payload, thunkApi) => {
         try {
-            await axios.post(url+'likes/', payload)
-            const { data } = await axios.get(url + 'likes');
-            const likes = data.filter(like => like.userId === payload.userId);
-            return thunkApi.fulfillWithValue(likes);
+            await axios.post(url+`post/${payload.postId}/like`, payload)
+            // return thunkApi.fulfillWithValue();
         } catch (error) {
             return thunkApi.rejectWithValue(error);
         }
     }
 );
+// export const createLikes = createAsyncThunk(
+//     'createLikes',
+//     async (payload, thunkApi) => {
+//         try {
+//             await axios.post(url+'likes/', payload)
+//             const { data } = await axios.get(url + 'likes');
+//             const likes = data.filter(like => like.userId === payload.userId);
+//             return thunkApi.fulfillWithValue(likes);
+//         } catch (error) {
+//             return thunkApi.rejectWithValue(error);
+//         }
+//     }
+// );
 
 export const cancelLikes = createAsyncThunk(
     'cancelLikes',
@@ -107,7 +132,7 @@ const likes = createSlice({
             })
             .addCase(createLikes.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.likes = action.payload;
+                // state.likes = action.payload;
                 state.error = null
             })
             .addCase(createLikes.rejected, (state, action) => {
