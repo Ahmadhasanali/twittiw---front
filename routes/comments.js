@@ -1,43 +1,35 @@
+
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const authMiddleware = require('../middlewares/authMiddleware')
-const { Post } = require('../models')
+const { Post, Comment } = require('../models')
 const joi = require('joi')
 
 const router = express.Router()
 
-router.get('/posts', async(req, res) => {
-    const posts = await Post.findAll({include: 'user', order: [['createdAt', 'DESC']]})
-    const result = posts.map(post => {
-        return post
+router.get('/post/:idPost/comment', async(req, res) => {
+    const {idPost} = req.params
+    const comment = await Comment.findAll({include: 'post',where: {postId: idPost}, order: [['createdAt', 'DESC']]})
+    const result = comment.map(item=>{
+        return item
     })
 
     res.status(200).json({data: result})
 })
 
-const createPostSchema = joi.object({
-    content: joi.string().required()
+const createCommentSchema = joi.object({
+    comment: joi.string().required()
 })
-
-router.get('/posts/me', authMiddleware, async(req, res) => {
-    const {user} = res.locals
-    const userId = user.dataValues.userId
-    const posts = await Post.findAll({include: 'user', order: [['createdAt', 'DESC']], where: {userId}})
-    const result = posts.map(post => {
-        return post
-    })
-
-    res.status(200).json({data:result})
-})
-
-router.post('/post', authMiddleware, async(req, res) => {
+router.post('/post/:idPost/comment', authMiddleware, async(req, res) => {
     try {
-        const {content} = await createPostSchema.validateAsync(req.body)
+        const {comment} = await createCommentSchema.validateAsync(req.body)
         const {user} = res.locals
         const userId = user.dataValues.userId
-        const createPost = await Post.create({
+        const {idPost} = req.params
+        const createComment = await Comment.create({
             userId,
-            content
+            postId: idPost,
+            comment
         })
         return res.status(201).json({
             Status: '201',
@@ -52,34 +44,35 @@ router.post('/post', authMiddleware, async(req, res) => {
     }
 })
 
-router.post('/post/:idPost', authMiddleware, async(req, res) => {
+router.post('/comment/:idComment', authMiddleware, async(req, res) =>{
     const {user} = res.locals
     const userId = user.dataValues.userId
-    const {idPost} = req.params
-    const post = await Post.findOne({where:{postId: idPost}})
+    const {idComment} = req.params
+    const comment = await Comment.findOne({where:{commentId: idComment}})
 
-    if (!post) {
+    if (!comment) {
         return res.status(404).send({
             Status: '404',
             errorMessage: 'Data not found!'
         })
     }
 
-    if (userId !== post.userId) {
+    if (userId !== comment.userId) {
         return res.status(403).send({
             Status: '403',
             errorMessage: 'Forbidden!'
         })
     }
 
-    if (post) {
-        await post.destroy()
+    if (comment) {
+        await comment.destroy()
     }
 
     res.status(200).send({
         result: 'Success',
         success: true
     })
+
 })
 
 module.exports = router
