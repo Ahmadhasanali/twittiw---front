@@ -18,8 +18,8 @@ export const getPosts = createAsyncThunk(
     'getPosts',
     async (payload, thunkApi) => {
         try {
-            const { data } = await axios.get(url + `posts?_sort=id&_order=DESC`)
-            return thunkApi.fulfillWithValue(data)
+            const { data } = await axios.get(url + `posts`)
+            return thunkApi.fulfillWithValue(data['data'])
         } catch (error) {
             return thunkApi.rejectWithValue(error);
         }
@@ -92,8 +92,7 @@ const posts = createSlice({
             .addCase(getPosts.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.posts = action.payload;
-                state.posts.concat(action.payload);
-                // console.log(state.posts);
+                // state.posts.concat(action.payload);
                 state.error = null;
             })
             .addCase(getPosts.rejected, (state, action) => {

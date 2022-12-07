@@ -120,18 +120,18 @@ const Sidebar = ({ children, setSearch }) => {
                                 <div className="user-name">
                                     {
                                         session ?
-                                            <h3>{session.name}</h3>
+                                            <h3>{session.fullName}</h3>
                                             :
                                             <h3>Nama User</h3>
                                     }
-                                    <p className="username uname-cta">@{session.username}</p>
+                                    <p className="username uname-cta">@{session.nickName}</p>
                                 </div>
                                 <FontAwesomeIcon icon={faEllipsis} />
                             </section>
                             <Overlay className='overlay-popup' target={target.current} show={show} placement="top">
                                 {(props) => (
                                     <Tooltip className='tooltip-popup' id="overlay-example" {...props}>
-                                        <button style={{border: 'none'}} onClick={logout}>Logout <span>@{session.username}</span></button>
+                                        <button style={{border: 'none'}} onClick={logout}>Logout <span>@{session.nickName}</span></button>
                                     </Tooltip>
                                 )}
                             </Overlay>

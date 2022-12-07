@@ -50,9 +50,9 @@ const CardPost = ({post}) => {
     return (
         <section className="card-tweet" style={{ cursor: 'pointer' }}>
             <Avatar color={Avatar.getRandomColor(['red', 'green', 'blue'])} name="Alii" round size='40px' style={{marginRight: '10px'}}/>
-            {post.name}<span className="username"> @{post.username}</span>
+            {post.user.fullName}<span className="username"> @{post.user.nickName}</span>
             <p style={{marginLeft: '50px'}} onClick={()=> toDetailPost(post.id)}>
-                {post.post}
+                {post.content}
             </p>
             <div className="like-rt-reply">
                 <FontAwesomeIcon className="icon" icon={faComment} />

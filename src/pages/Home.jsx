@@ -56,9 +56,9 @@ const Home = () => {
                     <div><button className='btn-tw add-tweet' onClick={handleSubmit}>Tweet</button></div>
                 </header>
                 {!isLoading ? posts.filter(item => {
-                    return item.post.toLowerCase() === '' ? item.post : item.post.toLowerCase().includes(search.toLowerCase())
+                    return item.content.toLowerCase() === '' ? item.content : item.content.toLowerCase().includes(search.toLowerCase())
                 }).map(post => (
-                    <CardPost key={post.id} post={post} />
+                    <CardPost key={post.postId} post={post} />
                 )) : <div>Loading....</div>}
             </Sidebar>    
             {
