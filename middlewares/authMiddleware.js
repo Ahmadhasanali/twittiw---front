@@ -5,7 +5,7 @@ require('dotenv').config();
 module.exports = async (req, res, next) => {
     try {
         const cookies = req.cookies[process.env.COOKIE_NAME];
-        console.log(cookies)
+        // console.log(cookies)
         if (!cookies) {
             return res.status(400).send({
                 errorMessage: 'Login is required.',

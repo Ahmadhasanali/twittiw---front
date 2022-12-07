@@ -72,28 +72,26 @@ router.post('/post/:idPost', authMiddleware, async (req, res) => {
     })
 })
 
-router.post('/post/:idPost/like', authMiddleware, async (req, res) => {
+router.post('/post/:postId/like', authMiddleware, async (req, res) => {
     try {
-        const { idPost } = req.params
+        const { postId } = req.params
         const { userId } = res.locals.user
-        
-        const like = await Like.findOne({
-            where: {
-                idPost, userId
-            }
-        })
-    
-        if (!like) {
-            await Like.create({
-                idPost, userId, status: true
+
+        const checkLike = async () => {
+            const likeData = await Like.findOne({
+                where: {
+                    postId, userId
+                }
             })
-        } else {
-            like.status = !like.status
-            await like.save()
-            checkStatus = like.status
+            return likeData
+        }
+
+        const like = await checkLike()
+        // console.log(like)
+        const checkPost = async (checkStatus) => {
             const posts = await Post.findOne({
                 where: {
-                    postId: idPost
+                    postId
                 }
             })
             if (checkStatus) {
@@ -103,18 +101,79 @@ router.post('/post/:idPost/like', authMiddleware, async (req, res) => {
                 posts.likes = posts.likes + 1
                 await posts.save()
             }
-            res.send({})
         }
-        
+
+
+        if (!like) {
+            await Like.create({
+                postId, userId, status: true
+            })
+
+            checkPost()
+            return res.send("success")
+        } else {
+            checkStatus = like.status
+            like.status = !checkStatus
+            await like.save()
+            checkPost(checkStatus)
+            // const posts = await Post.findOne({
+            //     where: {
+            //         postId
+            //     }
+            // })
+            // if (checkStatus) {
+            //     posts.likes = posts.likes - 1
+            //     await posts.save()
+            // } else {
+            //     posts.likes = posts.likes + 1
+            //     await posts.save()
+            // }
+            res.send("success 1")
+        }
+
     } catch (error) {
-        res.send({
-            errorMessage: error.mesage
+        res.status(400).send({
+            errorMessage: error.message
         })
     }
 
 
 
 
+})
+
+router.get('/posts/:postId/like/:userId', async (req, res) => {
+    try {
+        const { postId, userId } = req.params
+
+        const like = await Like.findOne({
+            where: {
+                postId,
+                userId
+            }
+        })
+
+        if (like) {
+            if (like.status) {
+                return res.status(200).send({
+                    likeId: like.likeId,
+                    postId: like.postId,
+                    status: true
+                })
+            } else {
+                return res.status(200).send({
+                    status: false
+                })
+            }
+        }
+        return res.status(200).send({
+            status: false
+        })
+    } catch (error) {
+        res.status(400).send({
+            errorMessage: error.message
+        })
+    }
 })
 
 module.exports = router
