@@ -59,6 +59,7 @@ const FormLogin = () => {
             // console.log(res.status)
             if(res.status === 200){
                 sessionStorage.setItem('data_user', JSON.stringify(res.data.user));
+                sessionStorage.setItem('token_user', JSON.stringify(res.data.token));
                 navigate('/');
             }
         } catch (error) {

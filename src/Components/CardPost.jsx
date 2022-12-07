@@ -5,28 +5,30 @@ import { useEffect } from "react";
 import { Card } from "react-bootstrap";
 import CardHeader from "react-bootstrap/esm/CardHeader";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { deletePost } from "../redux/modules/posts";
 import { cancelLikes, createLikes, getLikes } from "../redux/modules/likes";
 import Avatar from "react-avatar";
 
 const CardPost = ({post}) => {
     const navigate = useNavigate()
+    const location = useLocation()
     const dispatch = useDispatch()
+    const session = JSON.parse(sessionStorage.getItem("data_user"))
     
     const toDetailPost = (postId) => {
         navigate(`/post/${postId}`)
     }
 
     const removePost = (postId) => {
-        dispatch(deletePost({ postId: postId, userId: post.userId }))
+        dispatch(deletePost({ postId: postId, urlNow: location.pathname, userId: session.userId}))
     }
 
     const dataUser = JSON.parse(sessionStorage.getItem('data_user'))
 
     useEffect(() => {
         if(dataUser){
-            dispatch(getLikes(+dataUser.id))   
+            // dispatch(getLikes(+dataUser.id))   
         } 
     }, [dispatch])
 
@@ -57,7 +59,7 @@ const CardPost = ({post}) => {
             <div className="like-rt-reply">
                 <FontAwesomeIcon className="icon" icon={faComment} />
                 <FontAwesomeIcon className="icon" icon={faRetweet} />
-                {
+                {/* {
                     dataUser ? 
                         (likes.filter(like => like.postId === +post.id)).length > 0 ?
                             likes.filter(like => like.postId === +post.id)
@@ -72,9 +74,9 @@ const CardPost = ({post}) => {
                             // console.log(post.id,"belum di like")
                         :
                         <FontAwesomeIcon className="icon" icon={faHeart} />
-                }
+                } */}
                 {
-                    dataUser&&  post.userId === dataUser.id ? <FontAwesomeIcon className="icon" onClick={()=>removePost(post.id)} icon={faTrashCan} /> : ''
+                    dataUser&&  post.user.userId === dataUser.userId ? <FontAwesomeIcon className="icon" onClick={()=>removePost(post.postId)} icon={faTrashCan} /> : ''
                 }
             </div>
 

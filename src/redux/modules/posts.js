@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+const token = JSON.parse(sessionStorage.getItem("token_user"))
 
 const initialState = {
     posts: [],
@@ -19,7 +20,13 @@ export const getPosts = createAsyncThunk(
     async (payload, thunkApi) => {
         try {
             const { data } = await axios.get(url + `posts`)
-            return thunkApi.fulfillWithValue(data['data'])
+            if (payload.urlNow === '/') {
+                return thunkApi.fulfillWithValue(data['data'])
+            }
+            if (payload.urlNow === '/profile') {
+                const filter = data['data'].filter(item=> item.userId === payload.userId)
+                return thunkApi.fulfillWithValue(filter)
+            }
         } catch (error) {
             return thunkApi.rejectWithValue(error);
         }
@@ -56,10 +63,11 @@ export const createPost = createAsyncThunk(
     'createPost',
     async (payload, thunkApi) => {
         try {
-            await axios.post(url+'posts/', payload)
-            const { data } = await axios.get(url + 'posts?_sort=id&_order=DESC')
-            return thunkApi.fulfillWithValue(data)
+            await axios.post(url+'post/', {content: payload.post }, {headers:{authorization: `Bearer ${token}`}})
+            const { data } = await axios.get(url + 'posts')
+            return thunkApi.fulfillWithValue(data['data'])
         } catch (error) {
+            console.log(error.message);
             return thunkApi.rejectWithValue(error)
         }
     }
@@ -69,10 +77,15 @@ export const deletePost = createAsyncThunk(
     'deletePost',
     async (payload, thunkApi) => {
         try {
-            await axios.delete(url+'posts/'+ payload.postId)
-            const { data } = await axios.get(url + 'posts?_sort=id&_order=DESC')
-            const filter = data.filter(item => item.userId === +payload.userId)
-            return thunkApi.fulfillWithValue(filter)
+            await axios.post(url+'post/'+ payload.postId, null , {headers:{authorization: `Bearer ${token}`}})
+            const { data } = await axios.get(url + 'posts')
+            if (payload.urlNow === '/') {
+                return thunkApi.fulfillWithValue(data['data'])
+            }
+            if (payload.urlNow === '/profile') {
+                const filter = data['data'].filter(item=> item.userId === payload.userId)
+                return thunkApi.fulfillWithValue(filter)
+            }
         } catch (error) {
             return thunkApi.rejectWithValue(error)
         }

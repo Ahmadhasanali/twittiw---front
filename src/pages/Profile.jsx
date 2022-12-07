@@ -1,11 +1,12 @@
 import Sidebar from "../Components/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { getPostsByUserID } from "../redux/modules/posts";
+import { getPosts, getPostsByUserID } from "../redux/modules/posts";
 import CardPost from "../Components/CardPost";
 import { Form, Modal } from "react-bootstrap";
 import ButtonAction from "../Components/ButtonAction";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 let url;
 process.env.NODE_ENV == 'development' ? 
@@ -15,10 +16,11 @@ process.env.NODE_ENV == 'development' ?
 
 const Profile = () => {
     const dispatch = useDispatch()
+    const location = useLocation()
     const session = JSON.parse(sessionStorage.getItem("data_user"))
     const [show, setShow] = useState(false);
-    const [name, setName] = useState(`${session.name}`);
-    const [username, setUsername] = useState(`${session.username}`)
+    const [name, setName] = useState(`${session.fullName}`);
+    const [username, setUsername] = useState(`${session.nickName}`)
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -40,24 +42,25 @@ const Profile = () => {
     }
 
     const patchName = async () => {
-        await axios.patch(url+'users/'+session.id, { name: name, username: username });
+        await axios.patch(url+'users/'+session.userId, { name: name, username: username });
         const user = await axios.get(`${url}users?email=${session.email}`)
         sessionStorage.setItem('data_user', JSON.stringify(user.data[0]))
         dispatch(getPostsByUserID(session.id));
     }
 
     const { posts, isLoading } = useSelector(state => state.posts)
+    console.log(posts);
 
     useEffect(() => {
-        dispatch(getPostsByUserID(session.id));
+        dispatch(getPosts({urlNow: location.pathname, userId: session.userId}));
     }, [dispatch, session.id])
 
     return (
         <Sidebar>
             <section className="user-info">
                 <section className="user-bio">
-                    <h2>{session.name}</h2>
-                    <p className="username">@{session.username}</p>
+                    <h2>{session.fullName}</h2>
+                    <p className="username">@{session.nickName}</p>
                     <p className="bio">Lorem ipsum dolor sit amet consectetur adipisicing elit. Earum, possimus.</p>
                 </section>
                 <button onClick={handleShow} className="btn-tw btn-edit-profile">Edit Profile</button>
@@ -76,7 +79,7 @@ const Profile = () => {
                     <div>Loading....</div> :
                     posts.map(post => (
                         // <CardPost key={post.id} post={post} />
-                        <CardPost key={post.id} post={post} />
+                        <CardPost key={post.postId} post={post} />
                     ))}
             </section>
 
