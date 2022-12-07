@@ -7,7 +7,7 @@ const joi = require('joi')
 const router = express.Router()
 
 router.get('/posts', async(req, res) => {
-    const posts = await Post.findAll({include: 'user'})
+    const posts = await Post.findAll({include: 'user', order: [['createdAt', 'DESC']]})
     const result = posts.map(post => {
         return post
     })
