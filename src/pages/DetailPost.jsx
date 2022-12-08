@@ -18,7 +18,7 @@ const DetailPost = () => {
 
     const { comments, isLoading } = useSelector(state => state.comments)
     const { id } = useParams();
-    const { post } = useSelector(state => state.posts)
+    const { post, postInfoUser } = useSelector(state => state.posts)
     const [comment, handleCommentChange, setComment] = useInput();
 
     const session = JSON.parse(sessionStorage.getItem('data_user'))
@@ -32,7 +32,7 @@ const DetailPost = () => {
     }
 
     const makeComment = () => {
-        dispatch(createComment({ body: comment, postId: +id, userId: session.id, userName: session.name, username: session.username }))
+        dispatch(createComment({ comment, postId: id }))
         setComment('')
     }
 
@@ -41,9 +41,9 @@ const DetailPost = () => {
     }
 
     useEffect(() => {
-        dispatch(getComments(+id))
         dispatch(getPostsByID(+id))
-    }, [dispatch, id])
+        dispatch(getComments(+id))
+    }, [dispatch])
 
     const toHomePage = (e) => {
         e.preventDefault()
@@ -63,16 +63,17 @@ const DetailPost = () => {
                         :
                         <div>
                             <section className="my-4 pb-3 px-3">
-                                <p className="detail-post pb-3 px-3">
+                                <div className="detail-post pb-3 px-3">
                                     <Avatar color={Avatar.getRandomColor(['red', 'green', 'blue'])} name="Name" round size='40px' />
-                                    <span> {post.name}<span className="username">@{post.username}</span></span>
-                                    <p>{post ? post.post : ''}</p>
-                                </p>
-                                <div className="like-rt-reply detail-post-cta">
+                                    <span> {postInfoUser.fullName}<span>@{postInfoUser.nickName}</span></span>
+                                    <p>{post ? post.content : ''}</p>
+                                </div>
+                                <div className="like-rt-reply detail-post-cta mt-3">
                                     <FontAwesomeIcon className="icon" icon={faComment} />
                                     <FontAwesomeIcon className="icon" icon={faRetweet} />
                                     <FontAwesomeIcon className="icon" icon={faHeart} />
                                 </div>
+{ session?  
                                 <form className="reply-tweet">
                                     <input
                                         type="text"
@@ -87,22 +88,23 @@ const DetailPost = () => {
                                     />
                                     <button className='btn-tw edit-tweet' onClick={handleSubmit}>Reply</button>
                                 </form>
+ : ''}
                                 <p className='ps-4'> {comment.length} / 60</p>
                             </section>
                             <section className="px-3">
                                 {comments.map(comment => (
-                                    <section className="card-tweet" style={{ cursor: 'pointer' }} key={comment.id}>
+                                    <section className="card-tweet" style={{ cursor: 'pointer' }} key={comment.commentId}>
                                         <Avatar color={Avatar.getRandomColor(['red', 'green', 'blue'])} name="Name" round size='40px' />
-                                        <span> {comment.userName}<span className="username"> @{comment.username}</span></span>
-                                        <p>{comment.body}</p>
+                                        <span> {comment.user.fullName}<span className="username"> @{comment.user.nickName}</span></span>
+                                        <p>{comment.comment}</p>
                                         <div className="like-rt-reply">
                                             <FontAwesomeIcon className="icon" icon={faComment} />
                                             <FontAwesomeIcon className="icon" icon={faRetweet} />
                                             <FontAwesomeIcon className="icon" icon={faHeart} />
                                             {
                                                 session ?
-                                                    comment.userId === session.id ?
-                                                        <FontAwesomeIcon className="icon" icon={faTrashCan} onClick={() => removeComment(comment.id)} text={'Delete'} /> : ''
+                                                    comment.user.userId === session.userId ?
+                                                        <FontAwesomeIcon className="icon" icon={faTrashCan} onClick={() => removeComment(comment.commentId)} text={'Delete'} /> : ''
                                                     : ''
                                             }
                                         </div>

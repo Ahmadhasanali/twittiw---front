@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const token = JSON.parse(sessionStorage.getItem("token_user"))
+
 const initialState = {
     //push
     comments: [],
@@ -18,9 +20,8 @@ export const getComments = createAsyncThunk(
     'getComments',
     async (payload, thunkApi) => {
         try {
-            const { data } = await axios.get(url + 'comments?_sort=id&_order=DESC')
-            const comments = data.filter(comment => comment.postId === payload)
-            return thunkApi.fulfillWithValue(comments)
+            const { data } = await axios.get(url + `post/${payload}/comment`)
+            return thunkApi.fulfillWithValue(data['data'])
         } catch (error) {
             return thunkApi.rejectWithValue(error);
         }
@@ -31,10 +32,9 @@ export const createComment = createAsyncThunk(
     'createComments',
     async (payload, thunkApi) => {
         try {
-            await axios.post(url+'comments', payload)
-            const { data } =  await axios.get(url + 'comments?_sort=id&_order=DESC')
-            const comments = data.filter(comment => comment.postId === payload.postId)
-            return thunkApi.fulfillWithValue(comments)
+            await axios.post(url+`post/${payload.postId}/comment`, {comment :payload.comment}, {headers:{authorization: `Bearer ${token}`}})
+            const { data } = await axios.get(url + `post/${payload.postId}/comment`)
+            return thunkApi.fulfillWithValue(data['data'])
         } catch (error) {
             return thunkApi.rejectWithValue(error)
         }
@@ -45,10 +45,9 @@ export const deleteComment = createAsyncThunk(
     'deleteComments',
     async (payload, thunkApi) => {
         try {
-            await axios.delete(url+'comments/'+payload.commentId)
-            const { data } =  await axios.get(url + 'comments?_sort=id&_order=DESC')
-            const comments = data.filter(comment => comment.postId === payload.postId)
-            return thunkApi.fulfillWithValue(comments)
+            await axios.post(url+'comment/'+payload.commentId, null, {headers:{authorization: `Bearer ${token}`}})
+            const { data } = await axios.get(url + `post/${payload.postId}/comment`)
+            return thunkApi.fulfillWithValue(data['data'])
         } catch (error) {
             return thunkApi.rejectWithValue(error)
         }

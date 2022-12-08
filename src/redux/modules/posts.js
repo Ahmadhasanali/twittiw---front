@@ -4,9 +4,10 @@ const token = JSON.parse(sessionStorage.getItem("token_user"))
 
 const initialState = {
     posts: [],
-    isLoading: false,
+    isLoadingPost: false,
     error: null,
     post: {},
+    postInfoUser: {}
 }
 
 let url;
@@ -19,8 +20,8 @@ export const getPosts = createAsyncThunk(
     'getPosts',
     async (payload, thunkApi) => {
         try {
-            const { data } = await axios.get(url + `posts`)
             if (payload.urlNow === '/') {
+                const { data } = await axios.get(url + `posts`)
                 return thunkApi.fulfillWithValue(data['data'])
             }
             if (payload.urlNow === '/profile') {
@@ -56,9 +57,9 @@ export const getPostsByID = createAsyncThunk(
     'getPostByID',
     async (payload, thunkApi) => {
         try {
-            const { data } = await axios.get(url + 'posts?_sort=id&_order=DESC')
-            const filter = data.find(item => item.id === payload)
-            return thunkApi.fulfillWithValue(filter)
+            const { data } = await axios.get(url + `post/${payload}`)
+            // console.log(data['data'], 'from thunk');
+            return thunkApi.fulfillWithValue(data['data'])
         } catch (error) {
             return thunkApi.rejectWithValue(error)
         }
@@ -120,64 +121,65 @@ const posts = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getPosts.pending, (state, action) => {
-                state.isLoading = true;
+                state.isLoadingPost = true;
             })
             .addCase(getPosts.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingPost = false;
                 state.posts = action.payload;
                 // state.posts.concat(action.payload);
                 state.error = null;
             })
             .addCase(getPosts.rejected, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingPost = false;
                 state.error = action.payload;
             })
             .addCase(getPostsByID.pending, (state, action) => {
-                state.isLoading = true;
+                state.isLoadingPost = true;
             })
             .addCase(getPostsByID.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingPost = false;
                 state.post = action.payload;
+                state.postInfoUser = action.payload.user;
                 state.error = null;
             })
             .addCase(getPostsByID.rejected, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingPost = false;
                 state.error = action.payload;
             })
             .addCase(getPostsByUserID.pending, (state, action) => {
-                state.isLoading = true;
+                state.isLoadingPost = true;
             })
             .addCase(getPostsByUserID.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingPost = false;
                 state.posts = action.payload;
                 state.error = null;
             })
             .addCase(getPostsByUserID.rejected, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingPost = false;
                 state.error = action.payload;
             })
             .addCase(createPost.pending, (state, action) => {
-                state.isLoading = true;
+                state.isLoadingPost = true;
             })
             .addCase(createPost.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingPost = false;
                 state.posts = action.payload;
                 state.error = null;
             })
             .addCase(createPost.rejected, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingPost = false;
                 state.error = action.payload;
             })
             .addCase(deletePost.pending, (state, action) => {
-                state.isLoading = true;
+                state.isLoadingPost = true;
             })
             .addCase(deletePost.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingPost = false;
                 state.posts = action.payload;
                 state.error = null;
             })
             .addCase(deletePost.rejected, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingPost = false;
                 state.error = action.payload;
             })
     },
