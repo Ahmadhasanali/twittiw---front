@@ -2,14 +2,14 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const authMiddleware = require('../middlewares/authMiddleware')
-const { Post, Comment } = require('../models')
+const { Comment } = require('../models')
 const joi = require('joi')
 
 const router = express.Router()
 
 router.get('/post/:idPost/comment', async(req, res) => {
     const {idPost} = req.params
-    const comment = await Comment.findAll({include: 'post',where: {postId: idPost}, order: [['createdAt', 'DESC']]})
+    const comment = await Comment.findAll({include: ['user', 'post'],where: {postId: idPost}, order: [['createdAt', 'DESC']]})
     const result = comment.map(item=>{
         return item
     })

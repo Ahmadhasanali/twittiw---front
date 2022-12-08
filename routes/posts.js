@@ -15,6 +15,13 @@ router.get('/posts', async(req, res) => {
     res.status(200).json({data: result})
 })
 
+router.get('/post/:idPost', async(req, res) => {
+    const {idPost} = req.params
+    const post = await Post.findOne({where: {postId: idPost}, include: 'user'})
+    
+    res.status(200).json({data: post})
+})
+
 const createPostSchema = joi.object({
     content: joi.string().required()
 })
