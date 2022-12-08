@@ -13,11 +13,40 @@ router.get('/posts', async (req, res) => {
         return post
     })
 
-    res.status(200).json({ data: result })
+    res.status(200).json({data: result})
+})
+
+router.get('/post/:idPost', async(req, res) => {
+    const {idPost} = req.params
+    const post = await Post.findOne({where: {postId: idPost}, include: 'user'})
+    
+    res.status(200).json({data: post})
 })
 
 const createPostSchema = joi.object({
     content: joi.string().required()
+})
+
+router.get('/posts/me', authMiddleware, async(req, res) => {
+    const {user} = res.locals
+    const userId = user.dataValues.userId
+    const posts = await Post.findAll({include: 'user', order: [['createdAt', 'DESC']], where: {userId}})
+    const result = posts.map(post => {
+        return post
+    })
+
+    res.status(200).json({data:result})
+})
+
+router.get('/posts/me', authMiddleware, async(req, res) => {
+    const {user} = res.locals
+    const userId = user.dataValues.userId
+    const posts = await Post.findAll({include: 'user', order: [['createdAt', 'DESC']], where: {userId}})
+    const result = posts.map(post => {
+        return post
+    })
+
+    res.status(200).json({data:result})
 })
 
 router.post('/post', authMiddleware, async (req, res) => {
