@@ -1,14 +1,14 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const authMiddleware = require('../middlewares/authMiddleware')
-const { Post, Like } = require('../models')
+const { Post, Like, Retweet } = require('../models')
 const joi = require('joi')
 const { route } = require('./auth')
 
 const router = express.Router()
 
 router.get('/posts', async (req, res) => {
-    const posts = await Post.findAll({ include: 'user' })
+    const posts = await Post.findAll({ include: 'user', order: [['createdAt', 'DESC']] })
     const result = posts.map(post => {
         return post
     })
@@ -75,7 +75,7 @@ router.post('/post/:idPost', authMiddleware, async (req, res) => {
 router.post('/post/:postId/like', authMiddleware, async (req, res) => {
     try {
         const { postId } = req.params
-        const { userId } = res.locals.user
+        const { userId } = req.body
 
         const checkLike = async () => {
             const likeData = await Like.findOne({
@@ -142,7 +142,7 @@ router.post('/post/:postId/like', authMiddleware, async (req, res) => {
 
 })
 
-router.get('/posts/:postId/like/:userId', async (req, res) => {
+router.get('/posts/:postId/like/:userId', authMiddleware, async (req, res) => {
     try {
         const { postId, userId } = req.params
 
@@ -168,6 +168,58 @@ router.get('/posts/:postId/like/:userId', async (req, res) => {
         }
         return res.status(200).send({
             status: false
+        })
+    } catch (error) {
+        res.status(400).send({
+            errorMessage: error.message
+        })
+    }
+})
+
+router.post('/posts/:postId/retweet/:userId', async (req, res) => {
+    try {
+        const { postId, userId } = req.params
+
+        const post = await Retweet.findOne({
+            where: {
+                postId,
+                userId
+            }
+        })
+        if (post) {
+            await post.destroy()
+            return res.status(200).send({
+                message: "success deleted"
+            })
+        }
+
+        await Retweet.create({
+            postId,
+            userId
+        })
+        return res.status(200).send({
+            message: "success insert"
+        })
+    } catch (error) {
+        res.status(400).send({
+            errorMessage: error.message
+        })
+    }
+})
+
+router.get('/posts/retweet/:userId', authMiddleware, async (req, res) => {
+    try {
+        const { userId } = req.params
+
+        const post = await Retweet.findAll({
+            include: ['user','post'],
+            where: {
+                userId
+            }
+        })
+
+        return res.status(200).send({
+            data:post
         })
     } catch (error) {
         res.status(400).send({

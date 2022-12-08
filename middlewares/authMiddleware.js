@@ -4,25 +4,25 @@ require('dotenv').config();
 
 module.exports = async (req, res, next) => {
     try {
-        const cookies = req.cookies[process.env.COOKIE_NAME];
-        // console.log(cookies)
-        if (!cookies) {
-            return res.status(400).send({
-                errorMessage: 'Login is required.',
-            });
-        }
+	    const {authorization} = req.headers
+	    const [authType, authToken] =  (authorization || '').split(' ')
 
-        const [tokenType, tokenValue] = cookies.split(' ');
-        if (tokenType !== 'Bearer') {
-            return res.status(403).send({
-                errorMessage: 'Login is required',
-            });
-        }
+	    if(!authToken || authType !== 'Bearer'){
+	    	return res.status(400).send({ errorMessage: 'You are not logged in'})
+	    }
 
-        const { userId } = jwt.verify(tokenValue, process.env.SECRET_KEY);
-        const user = await User.findByPk(userId);
-        res.locals.user = user;
-        next();
+	    try {
+	    	const {userId} = jwt.verify(authToken, process.env.SECRET_KEY)
+	     	const user = await User.findByPk(userId)
+            if (!user) {
+                return res.status(401).send({ errorMessage: 'User not found'})
+            }
+	    	res.locals.user = user
+	    	next()
+	    }
+	    catch (e){
+	    	res.status(401).send({ errorMessage: 'Login Please!'})
+	    }
     } catch (error) {
         return res.status(400).send({
             errorMessage: error.message

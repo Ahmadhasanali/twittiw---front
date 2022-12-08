@@ -74,16 +74,13 @@ router.post('/login', async (req, res) => {
         })
     }
     const expires = new Date();
-    expires.setMinutes(expires.getSeconds() + 60);
+    expires.setMinutes(expires.getMinutes() + 60);
     const token = jwt.sign(
         { userId: user.userId },
-        process.env.SECRET_KEY,
-        // { expiresIn: expires.getSeconds() }
+        process.env.SECRET_KEY
     );
 
-    res.cookie(process.env.COOKIE_NAME, `Bearer ${token}`, {
-        expires: expires,
-    });
+    res.cookie(process.env.COOKIE_NAME, `Bearer ${token}`);
 
     return res.status(200).send({ token, user });
 })
