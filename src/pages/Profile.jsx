@@ -9,7 +9,7 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 
 let url;
-process.env.NODE_ENV == 'development' ? 
+process.env.NODE_ENV == 'development' ?
     url = process.env.REACT_APP_DEV_API_URL
     :
     url = process.env.REACT_APP_API_URL
@@ -18,18 +18,18 @@ const Profile = () => {
     const dispatch = useDispatch()
     const location = useLocation()
     const session = JSON.parse(sessionStorage.getItem("data_user"))
+    const token = JSON.parse(sessionStorage.getItem('token_user'))
     const [show, setShow] = useState(false);
     const [name, setName] = useState(`${session.fullName}`);
-    const [username, setUsername] = useState(`${session.nickName}`)
+    const [bio, setBio] = useState(`${session.bio}`);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const handleNewName = event => {
         setName(event.target.value)
     }
-
-    const handleNewUsername = event => {
-        setUsername(event.target.value)
+    const handleNewBio = event => {
+        setBio(event.target.value)
     }
 
     const handlePatchReq = event => {
@@ -42,17 +42,17 @@ const Profile = () => {
     }
 
     const patchName = async () => {
-        await axios.patch(url+'users/'+session.userId, { name: name, username: username });
-        const user = await axios.get(`${url}users?email=${session.email}`)
-        sessionStorage.setItem('data_user', JSON.stringify(user.data[0]))
-        dispatch(getPostsByUserID(session.id));
+        await axios.post(url + 'user/edit', { fullName: name }, { headers: { authorization: `Bearer ${token}` } });
+        const user = await axios.get(url+'user/me', {headers:{authorization: `Bearer ${token}`}})
+        console.log(user.data.data);
+        sessionStorage.setItem('data_user', JSON.stringify(user.data.data))
+        dispatch(getPosts({ urlNow: location.pathname, userId: session.userId }));
     }
 
     const { posts, isLoading } = useSelector(state => state.posts)
-    console.log(posts);
 
     useEffect(() => {
-        dispatch(getPosts({urlNow: location.pathname, userId: session.userId}));
+        dispatch(getPosts({ urlNow: location.pathname, userId: session.userId }));
     }, [dispatch, session.id])
 
     return (
@@ -95,13 +95,11 @@ const Profile = () => {
                                 placeholder="Name"
                                 value={name}
                                 onChange={handleNewName}
-                            />
-                            <Form.Control
+                            /><Form.Control
                                 type="text"
-                                className="mt-3"
-                                placeholder="Username"
-                                value={username}
-                                onChange={handleNewUsername}
+                                placeholder="Bio"
+                                value={bio}
+                                onChange={handleNewBio}
                             />
                         </Form.Group>
                     </Form>

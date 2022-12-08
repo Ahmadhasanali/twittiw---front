@@ -9,21 +9,27 @@ const Explore = () => {
     const staticPosts = [
         {
             id: 4,
-            post: `Good luck team!!! @TeamLiquidBR Cheering for you from the EU facility 💙 VAMOS #LETSGOLIQUID #VCTGameChangers`,
-            name: 'Team Liquid Valorant',
-            username: 'liquidvalorant'
+            content: `Good luck team!!! @TeamLiquidBR Cheering for you from the EU facility 💙 VAMOS #LETSGOLIQUID #VCTGameChangers`,
+            user: {
+                fullName: 'Team Liquid Valorant',
+                userName: 'liquidvalorant'
+            }
         },
         {
             id: 5,
-            post: `Check out these @TeamLiquidBR crosshairs 🎯`,
-            name: 'VALORANT Champions Tour',
-            username: 'valorantEsports'
+            content: `Check out these @TeamLiquidBR crosshairs 🎯`,
+            user: {
+                fullName: 'VALORANT Champions Tour',
+                userName: 'valorantEsports'
+            }
         },
         {
             id: 6,
-            post: `New Skinline: Abyssal`,
-            name: 'Mike | Valorant Leaks & News',
-            username: 'ValorLeaks'
+            content: `New Skinline: Abyssal`,
+            user: {
+                fullName: 'Mike | Valorant Leaks & News',
+                userName: 'ValorLeaks'
+            }
         },
     ]
 

@@ -53,7 +53,7 @@ const CardPost = ({post}) => {
         <section className="card-tweet" style={{ cursor: 'pointer' }}>
             <Avatar color={Avatar.getRandomColor(['red', 'green', 'blue'])} name="Alii" round size='40px' style={{marginRight: '10px'}}/>
             {post.user.fullName}<span className="username"> @{post.user.nickName}</span>
-            <p style={{marginLeft: '50px'}} onClick={()=> toDetailPost(post.id)}>
+            <p style={{marginLeft: '50px'}} onClick={()=> toDetailPost(post.postId)}>
                 {post.content}
             </p>
             <div className="like-rt-reply">
