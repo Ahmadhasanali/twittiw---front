@@ -7,11 +7,12 @@ import Sidebar from '../Components/Sidebar';
 import useInput from '../hooks/useInput';
 import { createPost, getPosts } from '../redux/modules/posts';
 import ButtonAction from '../Components/ButtonAction';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 const Home = () => {
     const navigate = useNavigate();
+    const location = useLocation()
     const dispatch = useDispatch()
     const { posts, isLoading } = useSelector(state => state.posts)
     const [post, handlePostChange, setPost] = useInput();
@@ -28,12 +29,12 @@ const Home = () => {
     const session = JSON.parse(sessionStorage.getItem("data_user"))
 
     const makePost = async () => {
-        dispatch(createPost({ post, userId: session.id, name: session.name, username: session.username }))
+        dispatch(createPost({ post }))
         setPost('')
     }
 
     useEffect(() => {
-        dispatch(getPosts());
+        dispatch(getPosts({urlNow: location.pathname}));
     }, [dispatch])
 
     return (
@@ -41,22 +42,28 @@ const Home = () => {
             <Sidebar setSearch={setSearch}>
                 <header>
                     <h3 className='ps-4'>Home</h3>
-                    <input
-                        type="text"
-                        name="tweet"
-                        id="tweet"
-                        placeholder="What's happening?"
-                        className='new-tweet'
-                        maxLength={60}
-                        value={post}
-                        onChange={handlePostChange}
-                        disabled={!session}
-                    />
-                    <p className='ps-4'> {post.length} / 60</p>
-                    <div><button className='btn-tw add-tweet' onClick={handleSubmit}>Tweet</button></div>
+                    {session? 
+                    <div>
+                        <input
+                            type="text"
+                            name="tweet"
+                            id="tweet"
+                            placeholder="What's happening?"
+                            className='new-tweet'
+                            maxLength={60}
+                            value={post}
+                            onChange={handlePostChange}
+                            disabled={!session}
+                        />
+                        <p className='ps-4'> {post.length} / 60</p>
+                        <div><button className='btn-tw add-tweet' onClick={handleSubmit}>Tweet</button></div>
+                    </div> 
+                    : ''}
                 </header>
                 {!isLoading ? posts.filter(item => {
-                    return item.content.toLowerCase() === '' ? item.content : item.content.toLowerCase().includes(search.toLowerCase())
+                    if(!item.retweetId){
+                        return item.content.toLowerCase() === '' ? item.content : item.content.toLowerCase().includes(search.toLowerCase())
+                    }
                 }).map(post => (
                     <CardPost key={post.postId} post={post} />
                 )) : <div>Loading....</div>}

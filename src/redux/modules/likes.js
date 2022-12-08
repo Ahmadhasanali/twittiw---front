@@ -9,7 +9,7 @@ const initialState = {
 };
 
 let url;
-process.env.NODE_ENV == 'development' ? 
+process.env.NODE_ENV == 'development' ?
     url = process.env.REACT_APP_DEV_API_URL
     :
     url = process.env.REACT_APP_API_URL
@@ -31,7 +31,8 @@ export const getLikes = createAsyncThunk(
     async (payload, thunkApi) => {
         try {
             // console.log(payload, "tes")
-            const likes = await axios.get(url + `posts/${payload.postId}/like/${payload.userId}`);
+            const token = JSON.parse(sessionStorage.getItem("token_user"))
+            const likes = await axios.get(url + `posts/${payload.postId}/like/${payload.userId}`, {headers:{authorization: `Bearer ${token}`}});
             // const likes = data.filter(like => like.userId === payload);
             return thunkApi.fulfillWithValue(likes.data);
         } catch (error) {
@@ -46,11 +47,11 @@ export const getCountLikes = createAsyncThunk(
     async (payload, thunkApi) => {
         try {
             const { data } = await axios.get(url + 'likes');
-            let countLikes = data.reduce((acc, curr)=>{
+            let countLikes = data.reduce((acc, curr) => {
                 const str = JSON.stringify(curr);
                 data[str] = (acc[str] || 0) + 1;
                 return data;
-             }, {});
+            }, {});
             return thunkApi.fulfillWithValue(countLikes);
         } catch (error) {
             return thunkApi.rejectWithValue(error);
@@ -74,7 +75,11 @@ export const createLikes = createAsyncThunk(
     'createLikes',
     async (payload, thunkApi) => {
         try {
-            await axios.post(url+`post/${payload.postId}/like`, payload)
+
+            const token = JSON.parse(sessionStorage.getItem("token_user"))
+            const user = JSON.parse(sessionStorage.getItem("data_user")).userId
+            // console.log(user)
+            await axios.post(url + `post/${payload.postId}/like`, { userId: user}, { headers: { authorization: `Bearer ${token}` }})
             // return thunkApi.fulfillWithValue();
         } catch (error) {
             return thunkApi.rejectWithValue(error);
@@ -99,7 +104,7 @@ export const cancelLikes = createAsyncThunk(
     'cancelLikes',
     async (payload, thunkApi) => {
         try {
-            await axios.delete(url+'likes/'+payload.id)
+            await axios.delete(url + 'likes/' + payload.id)
             const { data } = await axios.get(url + 'likes');
             const likes = data.filter(like => like.userId === payload);
             return thunkApi.fulfillWithValue(likes);
@@ -158,13 +163,13 @@ const likes = createSlice({
                 state.isLoading = false;
                 state.countLikes = action.payload;
                 state.error = null
-                console.log(state.countLikes)
+                // console.log(state.countLikes)
             })
             .addCase(getCountLikes.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload;
             })
-    }, 
+    },
 });
 
 export default likes.reducer;

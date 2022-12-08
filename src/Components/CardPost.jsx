@@ -12,47 +12,65 @@ import { useEffect } from "react";
 import { Card } from "react-bootstrap";
 import CardHeader from "react-bootstrap/esm/CardHeader";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { deletePost } from "../redux/modules/posts";
+import { useNavigate, useLocation } from "react-router-dom";
+import { addRetweet, deletePost } from "../redux/modules/posts";
 import { cancelLikes, createLikes, getLikes } from "../redux/modules/likes";
 import Avatar from "react-avatar";
 
-const CardPost = ({ post }) => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  const toDetailPost = (postId) => {
-    navigate(`/post/${postId}`);
-  };
-
-  const removePost = (postId) => {
-    dispatch(deletePost({ postId: postId, userId: post.userId }));
-  };
-
-  const dataUser = JSON.parse(sessionStorage.getItem("data_user"));
-  useEffect(() => {
-    if (dataUser) {
-      dispatch(getLikes({ userId: dataUser.userId, postId: post.postId }));
+const CardPost = ({post}) => {
+    const navigate = useNavigate()
+    const location = useLocation()
+    const dispatch = useDispatch()
+    const session = JSON.parse(sessionStorage.getItem("data_user"))
+    
+    const toDetailPost = (postId) => {
+        navigate(`/post/${postId}`)
     }
-  }, [dispatch]);
 
-  const { likes } = useSelector((state) => state.likes);
-  // const { countLikes } = useSelector(state => state.likes)
-  // console.log(likes)
+    const removePost = (postId) => {
+        dispatch(deletePost({ postId: postId, urlNow: location.pathname, userId: session.userId}))
+    }
 
+    const dataUser = JSON.parse(sessionStorage.getItem('data_user'))
+    const { likes } = useSelector(state => state.likes)
+
+    useEffect(() => {
+        if(dataUser){
+            dispatch(getLikes({
+              userId: +dataUser.userId,
+              postId: post.postId
+            }))   
+        } 
+    }, [dispatch])
+    // console.log(likes)
+
+    // const { countLikes } = useSelector(state => state.likes)
+    
   let giveLike;
   let undoLike;
+  let addRetweets;
   if (dataUser) {
     giveLike = (postId) => {
       // console.log(postId)
-      dispatch(createLikes({ postId: postId, userId: +dataUser.userId }));
+      dispatch(createLikes({ postId: postId, userId: +dataUser.userId }))
+      setTimeout(() => {
+        navigate(0)
+      }, 100);
     };
     undoLike = (id) => {
       // console.log(id)
       dispatch(cancelLikes({ id: +id }));
     };
+    addRetweets = (postId) => {
+      dispatch(addRetweet({ postId: postId, userId: session.userId}))
+      setTimeout(() => {
+        navigate(0)
+      }, 100);
+    }
   }
-  console.log(likes);
+  // console.log(post.post.content);
+  // console.log(likes);
+  // console.log(likes.status === true && likes.postId === post.postId, "status");
 
   return (
     <section className="card-tweet" style={{ cursor: "pointer" }}>
@@ -66,18 +84,21 @@ const CardPost = ({ post }) => {
       {post.user.fullName}
       <span className="username"> @{post.user.nickName}</span>
       <p style={{ marginLeft: "50px" }} onClick={() => toDetailPost(post.id)}>
-        {post.content}
+        {!post.retweetId?post.content:post.post.content}
       </p>
       <div className="like-rt-reply">
         <FontAwesomeIcon className="icon" icon={faComment} />
-        <FontAwesomeIcon className="icon" icon={faRetweet} />
+        <FontAwesomeIcon className="icon" icon={faRetweet}
+        onClick={() => addRetweets(post.postId)} 
+        />
         {dataUser ? (
           likes.status === true && likes.postId === post.postId ? (
+            // console.log("tes",likes)
             <div style={{ margin: 0, display: "flex", alignItem: "center" }}>
               <FontAwesomeIcon
                 className="icon"
                 icon={fasHeart}
-                  onClick={() => giveLike(likes.postId)}
+                  onClick={() => giveLike(post.postId)}
                 style={{ color: "pink" }}
               />
               <p style={{ marginLeft: "5px", marginTop: "-3px" }}>
@@ -90,7 +111,7 @@ const CardPost = ({ post }) => {
               <FontAwesomeIcon
                 className="icon"
                 icon={faHeart}
-                  onClick={() => giveLike(likes.postId)}
+                  onClick={() => giveLike(post.postId)}
               />
               <p style={{ marginLeft: "5px", marginTop: "-3px" }}>
                 {post.likes}
@@ -98,8 +119,8 @@ const CardPost = ({ post }) => {
             </div>
           )
         ) : (
-          // console.log(post.id,"belum di like")
-          <FontAwesomeIcon className="icon" icon={faHeart} />
+          console.log(post.id,"belum di like")
+          // <FontAwesomeIcon className="icon" icon={faHeart} />
         )}
         {/* {
                     dataUser ? 
